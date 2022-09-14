@@ -47,7 +47,7 @@
              }
     internal static class FleeingBehavior
     {
-        private const float RANGE = 10f;
+        private const float RANGE = 15f;
         internal static void Tick(float f)
         {
             Mission missionCurrent = Mission.Current;
@@ -125,6 +125,7 @@
                         Agent.MovementControlFlag defendUp = Agent.MovementControlFlag.DefendUp;
                         Agent.MovementControlFlag defendDown = Agent.MovementControlFlag.DefendUp;
                         Agent.MovementControlFlag defend = Agent.MovementControlFlag.DefendAuto;
+                        Agent.EventControlFlag dismount = Agent.EventControlFlag.Dismount;
                 
                         enemy.Controller = offController;
 
@@ -133,12 +134,13 @@
 
                         float Xdifference = pos.x - enemyPosition.x;
                         float Ydifference = pos.y - enemyPosition.y;
+                        float distance = MathF.Sqrt(Xdifference * Xdifference + Ydifference * Ydifference);
                         double PlayersAngle = Math.Atan2(Xdifference, Ydifference);
                         double enemyAngle = Math.Atan2(forwardDirection.x, forwardDirection.y);
-                        InformationManager.DisplayMessage(new InformationMessage("PlayersAngle -> " + PlayersAngle));
-                        InformationManager.DisplayMessage(new InformationMessage("EnemyAngle -> " + enemyAngle));
-                        InformationManager.DisplayMessage(new InformationMessage("Ydifference -> " + Ydifference));
-                        InformationManager.DisplayMessage(new InformationMessage("Xdifference -> " + Xdifference));
+                        //InformationManager.DisplayMessage(new InformationMessage("PlayersAngle -> " + PlayersAngle));
+                        //InformationManager.DisplayMessage(new InformationMessage("EnemyAngle -> " + enemyAngle));
+                        //InformationManager.DisplayMessage(new InformationMessage("Ydifference -> " + Ydifference));
+                        //InformationManager.DisplayMessage(new InformationMessage("Xdifference -> " + Xdifference));
 
                             if (PlayersAngle < enemyAngle)
                             {
@@ -151,25 +153,39 @@
                                 enemy.SetMovementDirection(in forwardDirection);
                             }
 
-
-                        if (Input.IsKeyDown(InputKey.NumpadPlus))
+                        //InformationManager.DisplayMessage(new InformationMessage("Enemy is in range -> " + distance));
+                        if (distance > 1.2)
                         {
-                            enemy.MovementFlags = defendUp;
+                            if (Input.IsKeyDown(InputKey.NumpadPlus))
+                            {
+                                enemy.MovementFlags = defendUp;
+                            }
+                            if (Input.IsKeyReleased(InputKey.NumpadPlus))
+                            {
+                                enemy.MovementFlags = Agent.MovementControlFlag.Action;
+                            }
                         }
-                        if (Input.IsKeyReleased(InputKey.NumpadPlus))
+                        else
                         { 
-                            enemy.MovementFlags = Agent.MovementControlFlag.Action;
+                            if (Input.IsKeyDown(InputKey.NumpadPlus))
+                            {
+                                enemy.MovementFlags = defendRight;
+                            }
+                            if (Input.IsKeyReleased(InputKey.NumpadPlus))
+                            {
+                                enemy.MovementFlags = Agent.MovementControlFlag.Action;
+                            }
                         }
 
 
                         if (Input.IsKeyDown(InputKey.Numpad8))
                         {
 
-                            if (Input.IsKeyPressed(InputKey.Numpad0))
+                            if (Input.IsKeyPressed(InputKey.Right))
                             {
                                 enemy.MovementFlags = attackUp;
                             }
-                            if (Input.IsKeyReleased(InputKey.Numpad0))
+                            if (Input.IsKeyReleased(InputKey.Right))
                             {
                                 enemy.MovementFlags = Agent.MovementControlFlag.Action;
                             }
@@ -178,11 +194,11 @@
 
                         if (Input.IsKeyDown(InputKey.Numpad5))
                         { 
-                            if (Input.IsKeyPressed(InputKey.Numpad0))
+                            if (Input.IsKeyPressed(InputKey.Right))
                             {
                                 enemy.MovementFlags = attackDown;
                             }
-                            if (Input.IsKeyReleased(InputKey.Numpad0))
+                            if (Input.IsKeyReleased(InputKey.Right))
                             {
                                 enemy.MovementFlags = Agent.MovementControlFlag.Action;
                             }
@@ -193,11 +209,11 @@
                         if (Input.IsKeyDown(InputKey.Numpad4))
                         {
 
-                            if (Input.IsKeyPressed(InputKey.Numpad0))
+                            if (Input.IsKeyPressed(InputKey.Right))
                             {
                                 enemy.MovementFlags = attackLeft;
                             }
-                            if (Input.IsKeyReleased(InputKey.Numpad0))
+                            if (Input.IsKeyReleased(InputKey.Right))
                             {
                                 enemy.MovementFlags = Agent.MovementControlFlag.Action;
                             }
@@ -205,11 +221,11 @@
                         }
                         if (Input.IsKeyDown(InputKey.Numpad6))
                         {
-                            if (Input.IsKeyPressed(InputKey.Numpad0))
+                            if (Input.IsKeyPressed(InputKey.Right))
                             {
                                 enemy.MovementFlags = attackRight;
                             }
-                            if (Input.IsKeyReleased(InputKey.Numpad0))
+                            if (Input.IsKeyReleased(InputKey.Right))
                             {
                                 enemy.MovementFlags = Agent.MovementControlFlag.Action;
                             }
@@ -251,6 +267,15 @@
                         if (Input.IsKeyReleased(InputKey.K))
                         {
                             enemy.MovementFlags = Agent.MovementControlFlag.Action;
+                        }
+
+                        if (Input.IsKeyDown(InputKey.Slash))
+                        {
+                            enemy.EventControlFlags = dismount;
+                        }
+                        if (Input.IsKeyReleased(InputKey.Slash))
+                        {
+                            enemy.EventControlFlags = Agent.EventControlFlag.Dismount;
                         }
 
                     }
